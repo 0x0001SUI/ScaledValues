@@ -43,19 +43,10 @@ import SwiftUI
         let metrics = UIFontMetrics(forTextStyle: textStyle.convertToSystemSpecificValue())
         let traits = UITraitCollection(preferredContentSizeCategory: dynamicTypeSize.convertToSystemSpecificValue())
         let font = metrics.scaledFont(for: .systemFont(ofSize: value), compatibleWith: traits)
-        let value = font.pointSize
+        let value = Double(font.pointSize)
         #endif
 
-        switch (minimumPointSize, maximumPointSize) {
-        case (.some(let minimum), .some(let maximum)):
-            return max(minimum, min(value, maximum))
-        case (.none, .some(let maximum)):
-            return min(value, maximum)
-        case (.some(let minimum), .none):
-            return max(minimum, value)
-        case (.none, .none):
-            return value
-        }
+        return value.between(minimumPointSize, maximumPointSize)
     }
 }
 

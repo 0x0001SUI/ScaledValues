@@ -42,19 +42,10 @@ import SwiftUI
         #if os(iOS)
         let metrics = UIFontMetrics(forTextStyle: textStyle.convertToSystemSpecificValue())
         let traits = UITraitCollection(preferredContentSizeCategory: dynamicTypeSize.convertToSystemSpecificValue())
-        let value = metrics.scaledValue(for: self.value, compatibleWith: traits)
+        let value = Double(metrics.scaledValue(for: self.value, compatibleWith: traits))
         #endif
         
-        switch (minimumValue, maximumValue) {
-        case (.some(let minimum), .some(let maximum)):
-           return max(minimum, min(value, maximum))
-        case (.none, .some(let maximum)):
-            return min(value, maximum)
-        case (.some(let minimum), .none):
-            return max(minimum, value)
-        case (.none, .none):
-            return value
-        }
+        return value.between(minimumValue, maximumValue)
     }
 }
 
