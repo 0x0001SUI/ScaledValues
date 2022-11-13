@@ -6,7 +6,7 @@ import SwiftUI
 
 @available(iOS 15.0, macCatalyst 15.0, tvOS 15.0, watchOS 8.0, *)
 final class ScaledValuesTests: XCTestCase {
-    func textConvertingFontStyleToSystemSpecificValue() throws {
+    func testConvertingFontStyleToSystemSpecificValue() throws {
         for fontStyle in Font.TextStyle.allCases {
             let converted = fontStyle.convertToSystemSpecificValue()
             
@@ -39,7 +39,7 @@ final class ScaledValuesTests: XCTestCase {
         }
     }
     
-    func textConvertingDynamicSizeToSystemSpecificValue() throws {
+    func testConvertingDynamicSizeToSystemSpecificValue() throws {
         for dynamicTypeSize in DynamicTypeSize.allCases {
             let converted = dynamicTypeSize.convertToSystemSpecificValue()
             
@@ -72,6 +72,26 @@ final class ScaledValuesTests: XCTestCase {
                 fatalError("Unknown DynamicTypeSize.")
             }
         }
+    }
+    
+    func testConvertingFontWeightToSystemSpecificValue() throws {
+        XCTAssertEqual(Font.Weight.ultraLight.convertToSystemSpecificValue(), UIFont.Weight.ultraLight)
+        XCTAssertEqual(Font.Weight.thin.convertToSystemSpecificValue(), UIFont.Weight.thin)
+        XCTAssertEqual(Font.Weight.light.convertToSystemSpecificValue(), UIFont.Weight.light)
+        XCTAssertEqual(Font.Weight.regular.convertToSystemSpecificValue(), UIFont.Weight.regular)
+        XCTAssertEqual(Font.Weight.medium.convertToSystemSpecificValue(), UIFont.Weight.medium)
+        XCTAssertEqual(Font.Weight.semibold.convertToSystemSpecificValue(), UIFont.Weight.semibold)
+        XCTAssertEqual(Font.Weight.bold.convertToSystemSpecificValue(), UIFont.Weight.bold)
+        XCTAssertEqual(Font.Weight.heavy.convertToSystemSpecificValue(), UIFont.Weight.heavy)
+        XCTAssertEqual(Font.Weight.black.convertToSystemSpecificValue(), UIFont.Weight.black)
+    }
+    
+    @available(iOS 16.0, macCatalyst 16.0, tvOS 16.0, watchOS 9.0, *)
+    func testConvertingFontWidthToSystemSpecificValue() throws {
+        XCTAssertEqual(Font.Width.condensed.convertToSystemSpecificValue(), UIFont.Width.condensed)
+        XCTAssertEqual(Font.Width.expanded.convertToSystemSpecificValue(), UIFont.Width.expanded)
+        XCTAssertEqual(Font.Width.compressed.convertToSystemSpecificValue(), UIFont.Width.compressed)
+        XCTAssertEqual(Font.Width.standard.convertToSystemSpecificValue(), UIFont.Width.standard)
     }
 }
 #endif
