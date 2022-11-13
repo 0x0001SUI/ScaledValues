@@ -12,22 +12,22 @@ import SwiftUI
 
 /// A dynamic property that scales an arbitrary layout value based on the current Dynamic Type settings.
 @available(iOS 15.0, macOS 12.0, macCatalyst 15.0, tvOS 15.0, watchOS 8.0, *)
-@propertyWrapper public struct ScaledValue: DynamicProperty {
+@propertyWrapper public struct ScaledValue<Value> where Value : Numeric, Value : Comparable {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     
-    @State private var value: Double
+    @State private var value: Value
     
-    private let minimumValue: Double?
-    private let maximumValue: Double?
+    private let minimumValue: Value?
+    private let maximumValue: Value?
     private let textStyle: Font.TextStyle
-
+    
     // MARK: Initializer
     
     /// Creates the scaled metric with an unscaled value bounded by minimum and maximum values,  and a text style to scale relative to.
     public init(
-        wrappedValue defaultValue: Double,
-        min minimumValue: Double? = nil,
-        max maximumValue: Double? = nil,
+        wrappedValue defaultValue: Value,
+        min minimumValue: Value? = nil,
+        max maximumValue: Value? = nil,
         relativeTo textStyle: Font.TextStyle = .body)
     {
         self.textStyle = textStyle
@@ -36,16 +36,46 @@ import SwiftUI
         self._value = State(wrappedValue: defaultValue)
     }
     
-    // MARK: Wrapped Value
+    public var wrappedValue: Value {
+        return value.between(minimumValue, maximumValue)
+    }
     
-    public var wrappedValue: Double {
+    #if os(iOS)
+    private var metrics: UIFontMetrics {
+        UIFontMetrics(forTextStyle: textStyle.convertToSystemSpecificValue())
+    }
+    
+    private var traits: UITraitCollection {
+        UITraitCollection(preferredContentSizeCategory: dynamicTypeSize.convertToSystemSpecificValue())
+    }
+    #endif
+}
+
+
+extension ScaledValue where Value : BinaryFloatingPoint {
+    
+    // MARK: Wrapped Value for Floating Numbers
+    
+    public var wrappedValue: Value {
         #if os(iOS)
-        let metrics = UIFontMetrics(forTextStyle: textStyle.convertToSystemSpecificValue())
-        let traits = UITraitCollection(preferredContentSizeCategory: dynamicTypeSize.convertToSystemSpecificValue())
-        let value = Double(metrics.scaledValue(for: self.value, compatibleWith: traits))
+        let value = Double(metrics.scaledValue(for: CGFloat(self.value), compatibleWith: traits))
+        #endif
+
+        return Value(value).between(minimumValue, maximumValue)
+    }
+}
+
+
+extension ScaledValue where Value : BinaryInteger {
+    
+    // MARK: Wrapped Value for Integers
+    
+    public var wrappedValue: Value {
+        #if os(iOS)
+        let value = Double(metrics.scaledValue(for: CGFloat(self.value), compatibleWith: traits))
         #endif
         
-        return value.between(minimumValue, maximumValue)
+        return Value(value).between(minimumValue, maximumValue)
     }
 }
 
@@ -55,7 +85,7 @@ import SwiftUI
 @available(iOS 15.0, macOS 12.0, macCatalyst 15.0, tvOS 15.0, watchOS 8.0, *)
 fileprivate struct PreviewView: View {
     @ScaledValue(relativeTo: .body)
-    private var size: Double = 32
+    private var size: Double = 32.0
 
     @ScaledValue(min: 30, max: 78, relativeTo: .body)
     private var minMaxSize: Double = 32
