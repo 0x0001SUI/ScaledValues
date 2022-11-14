@@ -7,6 +7,7 @@ It has several dynamic property wrappers:
 - **`@ScaledValue`**
 - **`@ScaledPointSize`**
 - **`@ScaledFont`**
+- **`@ScaledInsets`**
 
 All dynamic properties scale values according to the current [Dynamic Type size](https://developer.apple.com/documentation/swiftui/dynamictypesize) and provide you with the ability to define *minimum* and *maximum* values.
 
@@ -99,4 +100,44 @@ struct ArticleRow: View {
         }
     }
 }
+```
+
+### **`@ScaledInsets`**
+
+With `@ScaledInsets` you can scale the inset distances.
+
+```swift
+import SwiftUI
+import ScaledValues
+
+struct ArticlesView: View {
+    @ScaledInsets(max: maxRowInsets, relativeTo: .title)
+    private var rowInsets = defaultRowInsets
+    
+    var articles: [Article]
+
+    var body: some View {
+        List(articles) {
+            ArticleRow($0)
+                .listRowInsets(rowInsets)
+        }
+    }
+
+    private static var defaultRowInsets: EdgeInsets {
+        .init(
+            top: 5, 
+            leading: 10, 
+            bottom: 5, 
+            trailing: 15)
+    }
+
+    private static var maxRowInsets: EdgeInsets {
+        .init(
+            top: 10, 
+            leading: 20, 
+            bottom: 10, 
+            trailing: 20)
+    }
+}
+
 ```
