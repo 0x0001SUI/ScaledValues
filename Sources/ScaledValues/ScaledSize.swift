@@ -56,7 +56,7 @@ import SwiftUI
         
         return CGSize(
             width: width.between(minimumSize?.width, maximumSize?.width),
-            height: height.between(maximumSize?.height, maximumSize?.height)
+            height: height.between(minimumSize?.height, maximumSize?.height)
         )
     }
 }
